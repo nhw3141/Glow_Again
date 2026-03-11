@@ -18,6 +18,9 @@
       --ok:#7ee2c2;
       --shadow: 0 18px 50px rgba(70, 40, 80, .12);
       --radius: 26px;
+
+      /* Readability controls */
+      --msgSize: 18px;  /* default */
     }
 
     *{ box-sizing:border-box; }
@@ -34,7 +37,7 @@
     }
 
     .wrap{
-      max-width: 1020px;
+      max-width: 1060px;
       margin: 0 auto;
       padding: 28px 18px 44px;
       display:grid;
@@ -82,17 +85,8 @@
       100%{ transform: translateX(55%) rotate(20deg); opacity:0; }
     }
 
-    h1{
-      margin:0;
-      font-size: 20px;
-      line-height: 1.1;
-      letter-spacing:.2px;
-    }
-    .sub{
-      margin:3px 0 0;
-      color:var(--muted);
-      font-size: 13px;
-    }
+    h1{ margin:0; font-size: 20px; line-height: 1.1; letter-spacing:.2px; }
+    .sub{ margin:3px 0 0; color:var(--muted); font-size: 13px; }
 
     .badge{
       display:inline-flex;
@@ -140,14 +134,8 @@
       flex-wrap:wrap;
       margin-bottom: 10px;
     }
-    .panelTitle h2{
-      margin:0;
-      font-size: 16px;
-    }
-    .hint{
-      color: var(--muted);
-      font-size: 12px;
-    }
+    .panelTitle h2{ margin:0; font-size: 16px; }
+    .hint{ color: var(--muted); font-size: 12px; }
 
     .scannerBox{
       display:grid;
@@ -221,7 +209,7 @@
       box-shadow:
         0 0 24px rgba(124,199,255,.45),
         0 0 24px rgba(255,125,179,.35);
-      animation: scanMove 1.45s infinite ease-in-out;
+      animation: scanMove 1.55s infinite ease-in-out;
     }
     @keyframes scanMove{
       0%{ transform: translateY(0%); opacity:.35; }
@@ -251,15 +239,9 @@
       transition: transform .08s ease, box-shadow .18s ease, opacity .18s ease;
     }
     button:active{ transform: translateY(1px) scale(.99); }
-    button.primary{
-      background: linear-gradient(135deg, #ffb1d2, #a9ddff);
-    }
-    button.good{
-      background: linear-gradient(135deg, #bff6e6, #e6fff8);
-    }
-    button.ghost{
-      background: #ffffffb8;
-    }
+    button.primary{ background: linear-gradient(135deg, #ffb1d2, #a9ddff); }
+    button.good{ background: linear-gradient(135deg, #bff6e6, #e6fff8); }
+    button.ghost{ background: #ffffffb8; }
     button:disabled{ opacity:.55; cursor:not-allowed; }
 
     .note{
@@ -274,7 +256,7 @@
 
     .stage{
       position:relative;
-      min-height: 440px;
+      min-height: 520px;
       border-radius: 22px;
       background:
         radial-gradient(700px 280px at 10% 15%, #fff 0%, transparent 55%),
@@ -321,55 +303,72 @@
       100%{ transform: scale(.85); opacity:.65; }
     }
 
-    /* Floating messages: larger and slower, travel across the stage */
-    .float{
+    /* Sticky, readable pills */
+    .pill{
       position:absolute;
-      left:0; top:0;
-      transform: translate(-50%,-50%);
       padding: 12px 14px;
       border-radius: 999px;
-      background: #ffffffde;
       border: 1px solid rgba(255,255,255,.96);
       box-shadow: 0 18px 40px rgba(70,40,80,.12);
-      color: var(--ink);
-      font-size: 16px;
-      line-height: 1.1;
-      max-width: min(520px, 86vw);
+      max-width: min(640px, 88vw);
+      font-size: var(--msgSize);
+      line-height: 1.12;
+      background: #ffffffea;
+      user-select:none;
+      cursor:pointer;
+
+      /* Avoid covering UI */
+      z-index: 2;
+    }
+    .pill.soft{
+      background: linear-gradient(135deg, #ffffffef, #fff0f8ea);
+    }
+    .pill.pet{
+      background: linear-gradient(135deg, #ffffffef, #eef9ffea);
+    }
+
+    .pill .mini{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      user-select:none;
-      pointer-events:none;
-
-      animation: roam var(--dur) linear forwards;
     }
 
-    .float.soft{
-      background: linear-gradient(135deg, #ffffffeb, #fff1f8e8);
+    .pill:active{
+      transform: translateY(1px);
     }
-    .float.pet{
-      background: linear-gradient(135deg, #ffffffeb, #eef9ffe8);
-    }
-    .float b{ font-weight: 900; }
 
-    @keyframes roam{
-      0%{
-        opacity:0;
-        transform: translate(-50%,-50%) scale(.98);
-      }
-      10%{
-        opacity:1;
-        transform: translate(-50%,-50%) scale(1);
-      }
-      85%{
-        opacity:1;
-      }
-      100%{
-        opacity:0;
-        transform:
-          translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
-          scale(1.02);
-      }
+    /* Little hover motion is handled by JS. This is just smoothness. */
+    .pill{
+      transition: transform 120ms ease;
+    }
+
+    .toolbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-top: 10px;
+    }
+
+    .sliderWrap{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 18px;
+      background: #ffffffb8;
+      border: 1px solid rgba(255,255,255,.92);
+      box-shadow: 0 10px 24px rgba(70,40,80,.08);
+      color: var(--muted);
+      font-size: 12px;
+    }
+    input[type="range"]{
+      width: 160px;
+      accent-color: var(--accent);
     }
 
     footer{
@@ -388,7 +387,7 @@
         <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>Glow Again</h1>
-          <div class="sub">A soft little page for a hard moment</div>
+          <div class="sub">Messages stay until you clear them</div>
         </div>
       </div>
       <div class="badge" title="No uploads, no storage">
@@ -417,21 +416,35 @@
         <div class="controls">
           <button id="btnCamera" class="ghost">Enable camera</button>
           <button id="btnScan" class="primary" disabled>Start scan</button>
-          <button id="btnBurst" class="good" disabled>Send comfort burst</button>
-          <button id="btnGentleRain" class="primary" disabled>Slow message rain</button>
+          <button id="btnBurst" class="good" disabled>Comfort burst</button>
+          <button id="btnRain" class="primary" disabled>Start slow rain</button>
+          <button id="btnPause" class="ghost" disabled>Pause motion</button>
           <button id="btnClear" class="ghost">Clear</button>
         </div>
 
+        <div class="toolbar">
+          <div class="sliderWrap">
+            <span>Text size</span>
+            <input id="sizeSlider" type="range" min="16" max="26" value="18" />
+            <span id="sizeLabel">18</span>
+          </div>
+
+          <div class="badge" title="Click a message to dismiss it">
+            <span class="dot" aria-hidden="true"></span>
+            Click a message to remove it
+          </div>
+        </div>
+
         <div class="note">
-          Camera stays on-device. Nothing is uploaded or saved.
-          The scan is just a cute animation, then messages float around the screen slowly so she can read.
+          Messages will stay on screen until you clear them.
+          Motion is very slow and can be paused.
         </div>
       </section>
 
       <section class="card">
         <div class="panelTitle">
           <h2>Comfort zone</h2>
-          <div class="hint">Messages roam across the whole area</div>
+          <div class="hint">Slow drift, no auto-disappear</div>
         </div>
 
         <div id="stage" class="stage" aria-live="polite">
@@ -444,7 +457,7 @@
         </div>
 
         <div class="note" style="margin-top:12px;">
-          The “petty karma” lines are playful and nonviolent, just for a tiny laugh.
+          Petty karma is playful and nonviolent. Comfort lines are direct and supportive.
         </div>
       </section>
     </div>
@@ -456,18 +469,30 @@
 
   <script>
     const video = document.getElementById("video");
-    const btnCamera = document.getElementById("btnCamera");
-    const btnScan = document.getElementById("btnScan");
-    const btnBurst = document.getElementById("btnBurst");
-    const btnGentleRain = document.getElementById("btnGentleRain");
-    const btnClear = document.getElementById("btnClear");
     const scanOverlay = document.getElementById("scanOverlay");
     const stage = document.getElementById("stage");
     const statusText = document.getElementById("statusText");
 
+    const btnCamera = document.getElementById("btnCamera");
+    const btnScan = document.getElementById("btnScan");
+    const btnBurst = document.getElementById("btnBurst");
+    const btnRain = document.getElementById("btnRain");
+    const btnPause = document.getElementById("btnPause");
+    const btnClear = document.getElementById("btnClear");
+
+    const sizeSlider = document.getElementById("sizeSlider");
+    const sizeLabel = document.getElementById("sizeLabel");
+
     let stream = null;
     let scanning = false;
     let rainTimer = null;
+
+    // Motion loop
+    let paused = false;
+    let rafId = null;
+
+    // Keep track of pills and their velocities
+    const pills = new Map(); // el -> {x,y,vx,vy}
 
     function setStatus(text){
       statusText.textContent = text;
@@ -476,16 +501,13 @@
     const comfortLines = [
       "He doesn’t deserve you. Not even a little.",
       "You deserved honesty. Full stop.",
-      "You did not lose love, you escaped disrespect.",
+      "You did not lose love. You escaped disrespect.",
       "You are not too much. He was not enough.",
-      "Your heart is not a place for half-truths.",
       "Cheating is a character problem, not a you problem.",
       "You were loyal. That is a flex.",
       "You were real. He was reckless.",
       "You did nothing wrong by trusting someone you loved.",
-      "Your love was genuine, and that matters.",
-      "You don’t have to compete to be chosen.",
-      "You are allowed to feel everything, and still move forward.",
+      "You are allowed to be sad and still be strong.",
       "A good person will not make you beg for basic respect.",
       "Someone who lies is not someone to build a future with.",
       "You deserve a love that feels safe, calm, and steady.",
@@ -496,7 +518,6 @@
       "You are worthy of loyalty when no one is watching.",
       "You are not hard to love. He was hard to trust.",
       "You are not replaceable. You are rare.",
-      "You are not behind. You are being redirected.",
       "This hurts now, but it is not forever.",
       "One day this will be a chapter, not the whole book.",
       "You can miss him and still know he was wrong.",
@@ -504,16 +525,16 @@
       "Your glow did not come from him. It is yours.",
       "You will love again, and it will feel peaceful.",
       "You are allowed to choose yourself. Today and every day.",
-      "You are not asking for too much. You asked the wrong person.",
       "You are better than the way he treated you.",
-      "You deserve a partner, not a problem.",
-      "You deserve truth, not excuses.",
-      "You deserve consistency, not confusion.",
       "He fumbled you. That is on him.",
       "You are still lovable, still brilliant, still you.",
       "Breathe. Drink water. Be gentle with yourself.",
-      "I am proud of you for surviving today.",
-      "Your future is bigger than his choices."
+      "Your future is bigger than his choices.",
+      "You deserve a partner, not a problem.",
+      "You deserve truth, not excuses.",
+      "You deserve consistency, not confusion.",
+      "You are not asking for too much. You asked the wrong person.",
+      "You will not always feel like this. But you will always be you."
     ];
 
     const pettyKarma = [
@@ -526,17 +547,17 @@
       "May his earbuds tangle every single time.",
       "May his sleeves dip into dishwater unexpectedly.",
       "May his Wi-Fi be strong but emotionally inconsistent.",
-      "May every zipper catch on fabric.",
-      "May his coffee be lukewarm when he needs it most.",
       "May he always pick the slowest checkout line.",
-      "May he lose one earring back forever.",
-      "May his favorite snack be discontinued.",
-      "May his pillow always be warm on both sides.",
-      "May he forget why he walked into the room.",
+      "May his coffee be lukewarm when he needs it most.",
+      "May every zipper catch on fabric.",
+      "May he find a tiny rock in his shoe at the worst time.",
+      "May his autocorrect expose his nonsense.",
       "May his delivery arrive missing one item.",
-      "May his hair never cooperate on important days.",
-      "May he get a tiny rock in his shoe at the worst time.",
-      "May his autocorrect expose his nonsense."
+      "May his pillow be warm on both sides.",
+      "May he forget why he walked into the room.",
+      "May his favorite snack be discontinued.",
+      "May his headphones only work on one side.",
+      "May he spill one drop on a clean shirt."
     ];
 
     function rand(min, max){
@@ -551,77 +572,136 @@
       return { text, kind: isPetty ? "petty" : "comfort" };
     }
 
-    function spawnRoamingBubble(text, kind){
+    function clamp(v, min, max){
+      return Math.max(min, Math.min(max, v));
+    }
+
+    function stageRect(){
+      return stage.getBoundingClientRect();
+    }
+
+    function createPill(text, kind){
       const el = document.createElement("div");
-      el.className = "float " + (kind === "petty" ? "pet" : "soft");
+      el.className = "pill " + (kind === "petty" ? "pet" : "soft");
+      el.title = "Click to remove";
 
-      // Small emoji cue, readable and cute
-      el.textContent = (kind === "petty" ? "✨ " : "💗 ") + text;
+      const prefix = kind === "petty" ? "✨ " : "💗 ";
+      el.innerHTML = `<span class="mini">${prefix}${text}</span>`;
 
-      const rect = stage.getBoundingClientRect();
-
-      // Spawn anywhere across the stage, not just center
-      const startX = rand(rect.width * 0.08, rect.width * 0.92);
-      const startY = rand(rect.height * 0.12, rect.height * 0.90);
-
-      // Travel across the screen in a slow roam
-      const dx = rand(-rect.width * 0.65, rect.width * 0.65);
-      const dy = rand(-rect.height * 0.65, rect.height * 0.65);
-
-      // Slow duration so she can read
-      const dur = rand(7.5, 12.5) + "s";
-
-      el.style.left = startX + "px";
-      el.style.top = startY + "px";
-      el.style.setProperty("--dx", dx + "px");
-      el.style.setProperty("--dy", dy + "px");
-      el.style.setProperty("--dur", dur);
+      el.addEventListener("click", () => {
+        pills.delete(el);
+        el.remove();
+        setStatus("Removed one message. Keep what helps.");
+      });
 
       stage.appendChild(el);
 
-      // Remove after animation completes
-      setTimeout(() => el.remove(), 13000);
+      // Initial placement anywhere, but avoid very top (status area)
+      const rect = stageRect();
+      const x = rand(20, rect.width - 20);
+      const y = rand(90, rect.height - 30);
+
+      // Very slow drift velocity (pixels per frame-ish scale)
+      const vx = rand(-0.22, 0.22);
+      const vy = rand(-0.18, 0.18);
+
+      pills.set(el, { x, y, vx, vy });
+
+      // Apply position after it exists in DOM
+      positionPill(el, x, y);
+
+      return el;
+    }
+
+    function positionPill(el, x, y){
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.transform = "translate(-50%,-50%)";
+    }
+
+    function stepMotion(){
+      if (!paused){
+        const rect = stageRect();
+        for (const [el, s] of pills.entries()){
+          // Measure element size for boundary bounce
+          const w = el.offsetWidth;
+          const h = el.offsetHeight;
+
+          // Update
+          s.x += s.vx * 6; // slow
+          s.y += s.vy * 6;
+
+          // Bounce inside stage
+          const minX = 10 + w * 0.5;
+          const maxX = rect.width - 10 - w * 0.5;
+          const minY = 70 + h * 0.5;     // keep away from header/status
+          const maxY = rect.height - 10 - h * 0.5;
+
+          if (s.x < minX){ s.x = minX; s.vx *= -1; }
+          if (s.x > maxX){ s.x = maxX; s.vx *= -1; }
+          if (s.y < minY){ s.y = minY; s.vy *= -1; }
+          if (s.y > maxY){ s.y = maxY; s.vy *= -1; }
+
+          positionPill(el, s.x, s.y);
+        }
+      }
+      rafId = requestAnimationFrame(stepMotion);
+    }
+
+    function startMotionLoop(){
+      if (rafId) return;
+      rafId = requestAnimationFrame(stepMotion);
+    }
+
+    function stopMotionLoop(){
+      if (!rafId) return;
+      cancelAnimationFrame(rafId);
+      rafId = null;
     }
 
     function comfortBurst(){
-      // Fewer at once, slower, more readable
-      const total = 12;
+      const total = 10; // readable
       for (let i = 0; i < total; i++){
-        const { text, kind } = pickLine();
-        setTimeout(() => spawnRoamingBubble(text, kind), i * 350);
+        setTimeout(() => {
+          const { text, kind } = pickLine();
+          createPill(text, kind);
+        }, i * 260);
       }
-      setStatus("Comfort is floating in. Take your time reading.");
+      setStatus("Messages placed. They will stay here for you.");
     }
 
-    function startGentleRain(){
-      if (rainTimer) return;
-      setStatus("Slow message rain on. Let it soak in.");
-
-      // One message every ~900 ms, very readable
+    function toggleRain(){
+      if (rainTimer){
+        clearInterval(rainTimer);
+        rainTimer = null;
+        btnRain.textContent = "Start slow rain";
+        setStatus("Slow rain paused.");
+        return;
+      }
       rainTimer = setInterval(() => {
         const { text, kind } = pickLine();
-        spawnRoamingBubble(text, kind);
-      }, 900);
-
-      btnGentleRain.textContent = "Stop message rain";
+        createPill(text, kind);
+      }, 1100); // slow and readable
+      btnRain.textContent = "Stop slow rain";
+      setStatus("Slow rain on. Messages will stay until you clear them.");
     }
 
-    function stopGentleRain(){
-      if (!rainTimer) return;
-      clearInterval(rainTimer);
-      rainTimer = null;
-      setStatus("Message rain paused. You can start it again anytime.");
-      btnGentleRain.textContent = "Slow message rain";
+    function togglePause(){
+      paused = !paused;
+      btnPause.textContent = paused ? "Resume motion" : "Pause motion";
+      setStatus(paused ? "Motion paused. Read comfortably." : "Motion resumed gently.");
     }
 
-    function toggleGentleRain(){
-      if (rainTimer) stopGentleRain();
-      else startGentleRain();
-    }
-
-    function clearStage(){
-      [...stage.querySelectorAll(".float")].forEach(n => n.remove());
-      stopGentleRain();
+    function clearAll(){
+      if (rainTimer){
+        clearInterval(rainTimer);
+        rainTimer = null;
+        btnRain.textContent = "Start slow rain";
+      }
+      for (const el of pills.keys()){
+        el.remove();
+      }
+      pills.clear();
       setStatus("Cleared. Ready when you are.");
     }
 
@@ -636,8 +716,7 @@
         btnScan.disabled = false;
         setStatus("Camera on. Start the scan when you’re ready.");
       }catch(err){
-        // Still let them use the scan animation and messages
-        btnScan.disabled = false;
+        btnScan.disabled = false; // still allow scan animation
         setStatus("Camera blocked. You can still run the scan and messages.");
       }
     }
@@ -648,7 +727,8 @@
 
       btnScan.disabled = true;
       btnBurst.disabled = true;
-      btnGentleRain.disabled = true;
+      btnRain.disabled = true;
+      btnPause.disabled = true;
 
       scanOverlay.classList.add("on");
       setStatus("Scanning… collecting comfort pixels…");
@@ -656,24 +736,38 @@
       await new Promise(r => setTimeout(r, 2800));
 
       scanOverlay.classList.remove("on");
-      setStatus("Scan complete. Comfort deployed gently.");
+      setStatus("Scan complete. Comfort placed gently.");
 
       btnBurst.disabled = false;
-      btnGentleRain.disabled = false;
+      btnRain.disabled = false;
+      btnPause.disabled = false;
       btnScan.disabled = false;
 
       comfortBurst();
       scanning = false;
     }
 
+    // Text size slider
+    function setTextSize(px){
+      document.documentElement.style.setProperty("--msgSize", px + "px");
+      sizeLabel.textContent = px;
+    }
+    sizeSlider.addEventListener("input", (e) => setTextSize(Number(e.target.value)));
+
+    // Hook buttons
     btnCamera.addEventListener("click", enableCamera);
     btnScan.addEventListener("click", startScan);
     btnBurst.addEventListener("click", comfortBurst);
-    btnGentleRain.addEventListener("click", toggleGentleRain);
-    btnClear.addEventListener("click", clearStage);
+    btnRain.addEventListener("click", toggleRain);
+    btnPause.addEventListener("click", togglePause);
+    btnClear.addEventListener("click", clearAll);
+
+    // Start motion loop immediately (it does nothing until pills exist)
+    startMotionLoop();
 
     // Initial state
     setStatus("Tap “Enable camera” (optional), then “Start scan”.");
+    setTextSize(18);
   </script>
 </body>
 </html>
