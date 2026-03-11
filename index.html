@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Soft Support Scan</title>
+  <meta name="description" content="A cute comfort page with a gentle scan animation and floating supportive messages." />
+  <style>
+    :root{
+      --bg1:#fff6fb;
+      --bg2:#f3fbff;
+      --card:#ffffffcc;
+      --ink:#3a2f3b;
+      --muted:#6b5a6c;
+      --accent:#ff7db3;
+      --accent2:#7cc7ff;
+      --ok:#7ee2c2;
+      --shadow: 0 18px 50px rgba(70, 40, 80, .12);
+      --radius: 26px;
+    }
+
+    *{ box-sizing:border-box; }
+    body{
+      margin:0;
+      min-height:100svh;
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background:
+        radial-gradient(900px 600px at 20% 10%, #ffe1f1 0%, transparent 55%),
+        radial-gradient(900px 650px at 90% 30%, #dff3ff 0%, transparent 60%),
+        linear-gradient(135deg, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
+
+    .wrap{
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 40px;
+      display:grid;
+      gap: 18px;
+    }
+
+    header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+    }
+
+    .logo{
+      width:46px;
+      height:46px;
+      border-radius: 16px;
+      background:
+        radial-gradient(circle at 30% 30%, #fff 0%, #fff0 35%),
+        linear-gradient(135deg, #ffb7d3, #a6dcff);
+      box-shadow: 0 12px 26px rgba(255,125,179,.22);
+      position:relative;
+      overflow:hidden;
+    }
+    .logo:after{
+      content:"";
+      position:absolute;
+      inset:-40%;
+      background: linear-gradient(120deg, transparent 0%, #ffffffaa 30%, transparent 60%);
+      transform: rotate(20deg);
+      animation: shimmer 3.2s infinite ease-in-out;
+    }
+    @keyframes shimmer{
+      0%{ transform: translateX(-30%) rotate(20deg); opacity:.0; }
+      20%{ opacity:.85; }
+      55%{ opacity:.35; }
+      100%{ transform: translateX(55%) rotate(20deg); opacity:0; }
+    }
+
+    h1{
+      margin:0;
+      font-size: 20px;
+      line-height: 1.1;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:3px 0 0;
+      color:var(--muted);
+      font-size: 13px;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.7);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 18px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 18px;
+    }
+    @media (max-width: 860px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .scannerBox{
+      display:grid;
+      gap: 12px;
+      align-content:start;
+    }
+
+    .portraitFrame{
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      aspect-ratio: 1/1;
+      border-radius: 999px;
+      position:relative;
+      background:
+        radial-gradient(circle at 30% 20%, #fff 0%, #fff0 35%),
+        linear-gradient(135deg, #ffd0e4, #ccecff);
+      box-shadow: 0 18px 60px rgba(80,40,90,.12);
+      padding: 12px;
+    }
+
+    .portraitInner{
+      width:100%;
+      height:100%;
+      border-radius: 999px;
+      overflow:hidden;
+      position:relative;
+      background: #ffffffaa;
+      border: 2px solid rgba(255,255,255,.85);
+    }
+
+    video, canvas{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+      transform: scaleX(-1);
+    }
+
+    .scanOverlay{
+      position:absolute;
+      inset:0;
+      pointer-events:none;
+      opacity:0;
+      transition: opacity .35s ease;
+    }
+    .scanOverlay.on{ opacity:1; }
+
+    .scanGrid{
+      position:absolute;
+      inset:0;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(255,255,255,.0) 0px,
+          rgba(255,255,255,.0) 10px,
+          rgba(255,255,255,.18) 11px
+        );
+      mix-blend-mode: soft-light;
+      opacity:.55;
+    }
+
+    .scanLine{
+      position:absolute;
+      left: 8%;
+      right: 8%;
+      height: 10px;
+      top: 8%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(124,199,255,.9), rgba(255,125,179,.9), transparent);
+      filter: blur(.2px);
+      box-shadow:
+        0 0 24px rgba(124,199,255,.45),
+        0 0 24px rgba(255,125,179,.35);
+      animation: scanMove 1.35s infinite ease-in-out;
+    }
+    @keyframes scanMove{
+      0%{ transform: translateY(0%); opacity:.35; }
+      45%{ opacity:1; }
+      100%{ transform: translateY(760%); opacity:.35; }
+    }
+
+    .badgeRow{
+      display:flex;
+      gap: 10px;
+      justify-content:center;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #ffffffb8;
+      border: 1px solid rgba(255,255,255,.9);
+      font-size: 12px;
+      color: var(--muted);
+      box-shadow: 0 10px 24px rgba(70,40,80,.08);
+    }
+    .dot{
+      width:10px; height:10px; border-radius: 999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+    }
+
+    .controls{
+      display:flex;
+      gap: 10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top: 10px;
+    }
+
+    button{
+      appearance:none;
+      border:0;
+      padding: 12px 14px;
+      border-radius: 16px;
+      cursor:pointer;
+      font-weight: 650;
+      letter-spacing:.2px;
+      color: var(--ink);
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(70,40,80,.12);
+      transition: transform .08s ease, box-shadow .18s ease, opacity .18s ease;
+    }
+    button:active{ transform: translateY(1px) scale(.99); }
+    button.primary{
+      background: linear-gradient(135deg, #ffb1d2, #a9ddff);
+    }
+    button.good{
+      background: linear-gradient(135deg, #bff6e6, #e6fff8);
+    }
+    button.ghost{
+      background: #ffffffb8;
+    }
+    button:disabled{ opacity:.55; cursor:not-allowed; }
+
+    .panelTitle{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap: 10px;
+      flex-wrap:wrap;
+      margin-bottom: 10px;
+    }
+    .panelTitle h2{
+      margin:0;
+      font-size: 16px;
+    }
+    .hint{
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .note{
+      background: #ffffffa6;
+      border: 1px dashed rgba(255,125,179,.55);
+      padding: 12px 12px;
+      border-radius: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .stage{
+      position:relative;
+      min-height: 360px;
+      border-radius: 22px;
+      background:
+        radial-gradient(700px 280px at 10% 15%, #fff 0%, transparent 55%),
+        linear-gradient(135deg, #fff9fc, #f5fbff);
+      border: 1px solid rgba(255,255,255,.85);
+      overflow:hidden;
+    }
+
+    .stageCenter{
+      position:absolute;
+      inset:0;
+      display:grid;
+      place-items:center;
+      padding: 18px;
+      text-align:center;
+      pointer-events:none;
+    }
+
+    .status{
+      display:inline-flex;
+      gap: 10px;
+      align-items:center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: #ffffffd1;
+      border: 1px solid rgba(255,255,255,.9);
+      box-shadow: 0 14px 30px rgba(70,40,80,.10);
+      color: var(--muted);
+      font-size: 13px;
+      pointer-events:auto;
+    }
+
+    .spark{
+      width:10px; height:10px;
+      border-radius: 999px;
+      background: var(--ok);
+      box-shadow: 0 0 0 6px rgba(126,226,194,.22);
+      animation: pulse 1.2s infinite ease-in-out;
+    }
+    @keyframes pulse{
+      0%{ transform: scale(.85); opacity:.65; }
+      55%{ transform: scale(1.0); opacity:1; }
+      100%{ transform: scale(.85); opacity:.65; }
+    }
+
+    .float{
+      position:absolute;
+      left:0; top:0;
+      transform: translate(-50%,-50%);
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: #ffffffd6;
+      border: 1px solid rgba(255,255,255,.95);
+      box-shadow: 0 18px 40px rgba(70,40,80,.12);
+      color: var(--ink);
+      font-size: 13px;
+      max-width: 280px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select:none;
+      pointer-events:none;
+      animation: drift var(--dur) ease-in-out forwards;
+    }
+    .float.soft{ background: linear-gradient(135deg, #ffffffd8, #fff5fbda); }
+    .float.pet{ background: linear-gradient(135deg, #ffffffd8, #f3fbffda); }
+    .float strong{ font-weight: 800; }
+
+    @keyframes drift{
+      0%{ opacity:0; transform: translate(-50%,-50%) scale(.96); }
+      12%{ opacity:1; transform: translate(-50%,-50%) scale(1); }
+      100%{ opacity:0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.03); }
+    }
+
+    footer{
+      color: var(--muted);
+      font-size: 12px;
+      text-align:center;
+      padding: 4px 0 0;
+    }
+
+    a{ color: inherit; }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div>
+          <h1>Soft Support Scan</h1>
+          <div class="sub">A tiny comfort page for a rough moment</div>
+        </div>
+      </div>
+      <div class="badge" title="No uploads, no storage">
+        <span class="dot" aria-hidden="true"></span>
+        Local-only camera preview
+      </div>
+    </header>
+
+    <div class="grid">
+      <section class="card scannerBox">
+        <div class="panelTitle">
+          <h2>Portrait scan</h2>
+          <div class="hint">Cute visual effect, not real face analysis</div>
+        </div>
+
+        <div class="portraitFrame">
+          <div class="portraitInner">
+            <video id="video" autoplay playsinline muted></video>
+
+            <div id="scanOverlay" class="scanOverlay">
+              <div class="scanGrid"></div>
+              <div class="scanLine"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="badgeRow">
+          <div class="badge"><span class="dot" aria-hidden="true"></span>Mirror preview</div>
+          <div class="badge"><span class="dot" aria-hidden="true"></span>No saving</div>
+          <div class="badge"><span class="dot" aria-hidden="true"></span>Pastel mode</div>
+        </div>
+
+        <div class="controls">
+          <button id="btnCamera" class="ghost">Enable camera</button>
+          <button id="btnScan" class="primary" disabled>Start scan</button>
+          <button id="btnBurst" class="good" disabled>Send comfort burst</button>
+          <button id="btnClear" class="ghost">Clear</button>
+        </div>
+
+        <div class="note">
+          Tip: If you do not want to use the camera, you can still press “Send comfort burst” after enabling scan once.
+          The camera stays on-device, and nothing is uploaded.
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="panelTitle">
+          <h2>Comfort zone</h2>
+          <div class="hint">Floating messages appear here</div>
+        </div>
+
+        <div id="stage" class="stage" aria-live="polite">
+          <div class="stageCenter">
+            <div id="status" class="status">
+              <span class="spark" aria-hidden="true"></span>
+              <span id="statusText">Ready when you are.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="note" style="margin-top:12px;">
+          This page is for emotional support and a little catharsis. The “petty karma” lines are playful and nonviolent.
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      Made with pastel pixels. You can publish this on GitHub Pages.
+    </footer>
+  </div>
+
+  <script>
+    const video = document.getElementById("video");
+    const btnCamera = document.getElementById("btnCamera");
+    const btnScan = document.getElementById("btnScan");
+    const btnBurst = document.getElementById("btnBurst");
+    const btnClear = document.getElementById("btnClear");
+    const scanOverlay = document.getElementById("scanOverlay");
+    const stage = document.getElementById("stage");
+    const statusText = document.getElementById("statusText");
+
+    let stream = null;
+    let scanning = false;
+
+    const comfortLines = [
+      "You deserved honesty. Full stop.",
+      "What happened says everything about them, not you.",
+      "Your heart is not a place for half-truths.",
+      "You are allowed to be sad and still be strong.",
+      "This pain is real, and so is your future.",
+      "You are not hard to love. They were unready to be real.",
+      "You will love again, and it will feel safe.",
+      "You do not have to compete with anyone to be chosen.",
+      "You are worthy of loyalty when no one is watching.",
+      "Your softness is not weakness. It is proof you can feel.",
+      "One day this will be a chapter, not the whole book.",
+      "Your glow did not come from them. It is yours.",
+      "You can miss them and still know they were wrong.",
+      "Healing is not linear. You are still moving forward.",
+      "You do not need closure from someone who lied."
+    ];
+
+    // Playful, nonviolent “petty karma” lines.
+    // Not targeted slurs, threats, or doxxing. Just silly relief.
+    const pettyKarma = [
+      "May their phone charger only work at one angle.",
+      "May their socks always feel slightly damp.",
+      "May every playlist shuffle to the wrong song.",
+      "May they step on a Lego once, then reflect deeply.",
+      "May their iced drink always be mostly ice.",
+      "May their screen protector bubble forever.",
+      "May their sleeves dip into dishwater unexpectedly.",
+      "May their Wi-Fi be strong but emotionally inconsistent.",
+      "May their favorite snack be discontinued.",
+      "May their earbuds tangle every single time."
+    ];
+
+    function setStatus(text){
+      statusText.textContent = text;
+    }
+
+    async function enableCamera(){
+      if (stream) return;
+      try{
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false
+        });
+        video.srcObject = stream;
+        btnScan.disabled = false;
+        setStatus("Camera on. When ready, start the scan.");
+      }catch(err){
+        setStatus("Camera permission blocked. You can still use the comfort burst.");
+        btnScan.disabled = false; // allow “scan” effect without camera
+      }
+    }
+
+    function rand(min, max){
+      return Math.random() * (max - min) + min;
+    }
+
+    function spawnBubble(text, kind){
+      const el = document.createElement("div");
+      el.className = "float " + (kind === "petty" ? "pet" : "soft");
+      el.innerHTML = kind === "petty" ? "✨ " + text : "💗 " + text;
+
+      const rect = stage.getBoundingClientRect();
+      const x = rand(rect.width * 0.25, rect.width * 0.75);
+      const y = rand(rect.height * 0.35, rect.height * 0.78);
+
+      const dx = rand(-220, 220) + "px";
+      const dy = rand(-210, -360) + "px";
+      const dur = rand(2.4, 4.2) + "s";
+
+      el.style.left = x + "px";
+      el.style.top = y + "px";
+      el.style.setProperty("--dx", dx);
+      el.style.setProperty("--dy", dy);
+      el.style.setProperty("--dur", dur);
+
+      stage.appendChild(el);
+      setTimeout(() => el.remove(), 4600);
+    }
+
+    function burst(){
+      const total = 16;
+      for (let i = 0; i < total; i++){
+        const pickPetty = Math.random() < 0.28;
+        const list = pickPetty ? pettyKarma : comfortLines;
+        const text = list[Math.floor(Math.random() * list.length)];
+        setTimeout(() => spawnBubble(text, pickPetty ? "petty" : "comfort"), i * 120);
+      }
+      setStatus("Sending support. Breathe. You are not alone.");
+    }
+
+    function clearStage(){
+      [...stage.querySelectorAll(".float")].forEach(n => n.remove());
+      setStatus("Cleared. Ready when you are.");
+    }
+
+    async function startScan(){
+      if (scanning) return;
+      scanning = true;
+      btnScan.disabled = true;
+      btnBurst.disabled = true;
+
+      scanOverlay.classList.add("on");
+      setStatus("Scanning… collecting comfort pixels…");
+
+      const scanTimeMs = 2600;
+      await new Promise(r => setTimeout(r, scanTimeMs));
+
+      scanOverlay.classList.remove("on");
+      setStatus("Scan complete. Comfort deployed.");
+
+      btnBurst.disabled = false;
+      btnScan.disabled = false;
+
+      // Auto burst after scan
+      burst();
+      scanning = false;
+    }
+
+    btnCamera.addEventListener("click", enableCamera);
+    btnScan.addEventListener("click", startScan);
+    btnBurst.addEventListener("click", burst);
+    btnClear.addEventListener("click", clearStage);
+
+    // Make it usable immediately even without camera
+    setStatus("Tap “Enable camera” (optional), then “Start scan”.");
+  </script>
+</body>
+</html>
